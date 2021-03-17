@@ -6,11 +6,10 @@ ENV XDEBUG_HOST=host.docker.internal
 ENV XDEBUG_PORT=9000
 ENV XDEBUG_LOGS_FILE=/tmp/xdebug.log
 
-# Install and Enable XDebug. If you are using a an old version of XDebug you should map new XDebug keys with old ones. 
-# https://xdebug.org/docs/upgrade_guide
+# Install and Enable XDebug
 RUN pecl install xdebug  \
     && docker-php-ext-enable xdebug \
-    && echo -e "xdebug.mode=debug \n\
+    && echo "xdebug.mode=debug \n\
                 xdebug.start_with_request=trigger \n\
                 xdebug.client_host=${XDEBUG_HOST} \n\
                 xdebug.client_port=${XDEBUG_PORT} \n\
@@ -22,9 +21,11 @@ RUN apt-get install curl
 
 RUN curl https://raw.githubusercontent.com/torinaki/phpdebug-cli/master/phpdebug.sh > ~/.phpdebug
 
-RUN echo -e "# Get the aliases and functions    \n\
-            if [ -f ~/.phpdebug ]; then         \n\
-                . ~/.phpdebug                   \n\
-            fi "
+RUN echo "# Get the aliases and functions\n\
+            if [ -f ~/.phpdebug ]; then\n\
+                . ~/.phpdebug \n\
+            fi" >> /root/.bashrc
 
-CMD /bin/bash source /root/.bashrc && phpdebug
+SHELL [ "/bin/bash", "source /root/.bashrc" ]
+
+SHELL [ "phpdebug" ]
